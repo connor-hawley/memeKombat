@@ -13,6 +13,7 @@ Game::Game() :
 	m_backgroundTexture.loadFromFile("content/memeCombat.jpg");
 	m_background.setTexture(m_backgroundTexture, true);
 
+	//Initialize the press enter game object
 	m_gameObject0 = new AnimatedGameObject(0.75f, false);
 	m_gameObject0->load("content/pressEntertoBegin.png");
 	m_gameObject0->useAnimations(GameObject::Direction::none);
@@ -22,52 +23,12 @@ Game::Game() :
 	
 	m_gameObjects = { m_gameObject0 };
 
-	//make gameover text
-	//m_gameFont.loadFromFile("content/comicSans.ttf");
-	//m_gameWonText.setFont(m_gameFont);
-	//m_gameWonText.setString("GAME OVER");
-	//m_gameWonText.setCharacterSize(55);
-	//m_gameWonText.setFillColor(sf::Color(196, 169, 86));
-	
-	//initialize the player
-	//m_player = new AnimatedGameObject(0.15f, true);
-    //load and size the player sprites    
-    //m_player->load("content/linkSprites.png");
-	//m_player->useAnimations(GameObject::Direction::down);
-	//m_player->addTextureRect(sf::Rect<int>(250, 525, 95, 125));
-	//m_player->addTextureRect(sf::Rect<int>(613, 528, 95, 125));
-	//m_player->useAnimations(GameObject::Direction::left);
-    //m_player->setScale(0.25f);
-	//m_player->setPosition(245.0f, 350.0f);
-
-	//strobing chicken object
-	//m_chicken = new AnimatedGameObject(1.25f, false);
-	//load texture and intRects
-	//m_chicken->load("content/linkEnemies.png");
-	//m_chicken->useAnimations(GameObject::Direction::none);
-	//m_chicken->addTextureRect(sf::Rect<int>(279, 14, 18, 18));
-	//m_chicken->addTextureRect(sf::Rect<int>(299, 14, 18, 18));
-	//m_chicken->setStrobeInterval(100.0f);
-	//m_chicken->setScale(1.2f);
-	//m_chicken->setPosition(430.0f, 205.0f);
-
-	//floating fairy object
-	//m_fairy = new AnimatedGameObject(0.15f, false);
-	//m_fairy->load("content/linkEnemies.png");
-	//m_fairy->useAnimations(GameObject::Direction::none);
-	//m_fairy->addTextureRect(sf::Rect<int>(370, 16, 24, 50));
-	//m_fairy->addTextureRect(sf::Rect<int>(400, 16, 24, 50));
-	//m_fairy->setScale(1.2f);
-	//m_fairy->setPosition(385.0f, 15.0f);
-
-	//seamonster object
-	//m_monster = new RegularGameObject();
-	//m_monster->load("content/linkEnemies.png");
-	//m_monster->addTextureRect(sf::Rect<int>(180, 265, 35, 35));
-	//m_monster->setScale(1.2f);
-	//m_monster->setPosition(125.0f, 250.0f);
-
-	//m_gameObjects = {m_player, m_chicken, m_fairy, m_monster};
+	//make game font
+	m_gameFont.loadFromFile("content/comicSans.ttf");
+	m_gameWonText.setFont(m_gameFont);
+	m_gameWonText.setString("GAME OVER");
+	m_gameWonText.setCharacterSize(55);
+	m_gameWonText.setFillColor(sf::Color(196, 169, 86));
 }
 
 void Game::run() {
@@ -92,49 +53,101 @@ void Game::processEvents() {
     sf::Event event;
     while(m_window.pollEvent(event)) {
         switch(event.type) {
-            case sf::Event::KeyPressed:
+            case sf::Event::KeyPressed :
             //handle key down here
-                handlePlayerInput(event.key.code, true);
+                handlePlayerInput(event, true); //event.key.code
                 break;
-            case sf::Event::KeyReleased:
-                handlePlayerInput(event.key.code, false);
+            case sf::Event::KeyReleased :
+                handlePlayerInput(event, false);
                 break;
-
-            case sf::Event::Closed:
+			case sf::Event::MouseButtonPressed :
+				handlePlayerInput(event, true); //event.mousePressed
+				break;
+			case sf::Event::Closed : {
 				for (GameObject* gameObject : m_gameObjects) {
 					delete gameObject;
 				}
 				delete m_characterSelectShape;
 				m_gameState = GameState::GameOver;
-                m_window.close();
-                break;
+				m_window.close();
+				break;
+			}
+				
         }
     }
 }
 
-void Game::handlePlayerInput(sf::Keyboard::Key key, bool isDown) {
-	if (m_gameState == GameState::Starting) {
-		if (key == sf::Keyboard::Return) {
-			m_transition = true;
+void Game::handlePlayerInput(sf::Event event, bool isDown) {
+	if (isDown) {
+		switch (m_gameState) {
+		case GameState::Starting : {
+			if (event.type == sf::Event::EventType::KeyPressed) {
+				if (event.key.code == sf::Keyboard::Return && isDown) {
+					m_transition = true;
+				}
+				m_gameObject0->useAnimations(GameObject::Direction::none);
+			}
+			break;
 		}
-		m_gameObject0->useAnimations(GameObject::Direction::none);
+		case GameState::PlayerSelect : {
+			if (event.type == sf::Event::EventType::MouseButtonPressed) {
+				sf::Event::MouseButtonEvent mouseEvent = event.mouseButton;
+				if (mouseEvent.button == sf::Mouse::Button::Left) {
+					sf::Vector2<float> shapeLoc = m_characterSelectShape->getPosition();
+					if (shapeLoc.x == 65 && shapeLoc.y == 78) {
+						m_meme = Meme::Harambe;
+						m_transition = true;
+					}
+					else if (shapeLoc.x == 200 && shapeLoc.y == 78) {
+						m_meme = Meme::Kangaroo;
+						m_transition = true;
+					}
+					else if (shapeLoc.x == 200 && shapeLoc.y == 225) {
+						m_meme = Meme::EvilKermit;
+						m_transition = true;
+					}
+					else if (shapeLoc.x == 335 && shapeLoc.y == 225) {
+						m_meme = Meme::Pepe;
+						m_transition = true;
+					}
+					else if (shapeLoc.x == 470 && shapeLoc.y == 225) {
+						m_meme = Meme::DatBoi;
+						m_transition = true;
+					}
+					else if (shapeLoc.x == 470 && shapeLoc.y == 78) {
+						m_meme = Meme::JoeBiden;
+						m_transition = true;
+					}
+					else if (shapeLoc.x == 600 && shapeLoc.y == 78) {
+						m_meme = Meme::Spongegar;
+						m_transition = true;
+					}
+				}
+			}
+			break;
+		}
+		case GameState::Fighting : {
+			if (!isDown) {
+				//m_player->useAnimations(GameObject::Direction::none);
+			}
+			else {
+				if (event.key.code == sf::Keyboard::Left) {
+				}
+				if (event.key.code == sf::Keyboard::Right) {
+				}
+				if (event.key.code == sf::Keyboard::Up) {
+				}
+				if (event.key.code == sf::Keyboard::Down) {
+					//m_player->GameObject::m_down = isDown;
+					//m_player->useAnimations(GameObject::Direction::down);
+				}
+			}
+			break;
+		}
+		};
 	}
-	if (m_gameState == GameState::Fighting) {
-		if (!isDown) {
-			//m_player->useAnimations(GameObject::Direction::none);
-		}
-		else {
-			if (key == sf::Keyboard::Left) {
-			}
-			if (key == sf::Keyboard::Right) {
-			}
-			if (key == sf::Keyboard::Up) {
-			}
-			if (key == sf::Keyboard::Down) {
-				//m_player->GameObject::m_down = isDown;
-				//m_player->useAnimations(GameObject::Direction::down);
-			}
-		}
+	else {
+	
 	}
 }
 
@@ -179,50 +192,52 @@ void Game::update(sf::Time deltaT) {
 	for (GameObject* gameObject : m_gameObjects) {
 		gameObject->update();
 	}
-	if (m_gameState == GameState::PlayerSelect) {
+	//highlights the character the player is hovering over
+	switch (m_gameState) {
+	case GameState::PlayerSelect : {
 		sf::Vector2<int> mouseLoc = sf::Mouse::getPosition(m_window);
 		if (mouseLoc.x > 65 && mouseLoc.x < 190 && mouseLoc.y > 78 && mouseLoc.y < 215) {
 			m_characterSelectShape->setPosition(65, 78);
-			m_showSelectShape = true;
+			m_characterText.setString("harambe");
+			m_highlightCharacter = true;
 		}
-		if (mouseLoc.x > 200 && mouseLoc.x < 325 && mouseLoc.y > 78 && mouseLoc.y < 215) {
+		else if (mouseLoc.x > 200 && mouseLoc.x < 325 && mouseLoc.y > 78 && mouseLoc.y < 215) {
 			m_characterSelectShape->setPosition(200, 78);
-			m_showSelectShape = true;
+			m_characterText.setString("kangaroo");
+			m_highlightCharacter = true;
 		}
-		if (mouseLoc.x > 200 && mouseLoc.x < 325 && mouseLoc.y > 225 && mouseLoc.y < 360) {
+		else if (mouseLoc.x > 200 && mouseLoc.x < 325 && mouseLoc.y > 225 && mouseLoc.y < 360) {
 			m_characterSelectShape->setPosition(200, 225);
-			m_showSelectShape = true;
+			m_characterText.setString("evil kermit");
+			m_highlightCharacter = true;
 		}
-		if (mouseLoc.x > 335 && mouseLoc.x < 455 && mouseLoc.y > 225 && mouseLoc.y < 360) {
+		else if (mouseLoc.x > 335 && mouseLoc.x < 455 && mouseLoc.y > 225 && mouseLoc.y < 360) {
 			m_characterSelectShape->setPosition(335, 225);
-			m_showSelectShape = true;
+			m_characterText.setString("pepe");
+			m_highlightCharacter = true;
 		}
-		if (mouseLoc.x > 470 && mouseLoc.x < 590 && mouseLoc.y > 225 && mouseLoc.y < 360) {
+		else if (mouseLoc.x > 470 && mouseLoc.x < 590 && mouseLoc.y > 225 && mouseLoc.y < 360) {
 			m_characterSelectShape->setPosition(470, 225);
-			m_showSelectShape = true;
+			m_characterText.setString("dat boi");
+			m_highlightCharacter = true;
 		}
-		if (mouseLoc.x > 470 && mouseLoc.x < 590 && mouseLoc.y > 78 && mouseLoc.y < 215) {
+		else if (mouseLoc.x > 470 && mouseLoc.x < 590 && mouseLoc.y > 78 && mouseLoc.y < 215) {
 			m_characterSelectShape->setPosition(470, 78);
-			m_showSelectShape = true;
+			m_characterText.setString("joe biden");
+			m_highlightCharacter = true;
 		}
-		if (mouseLoc.x > 600 && mouseLoc.x < 725 && mouseLoc.y > 78 && mouseLoc.y < 215) {
+		else if (mouseLoc.x > 600 && mouseLoc.x < 725 && mouseLoc.y > 78 && mouseLoc.y < 215) {
 			m_characterSelectShape->setPosition(600, 78);
-			m_showSelectShape = true;
+			m_characterText.setString("spongegar");
+			m_highlightCharacter = true;
 		}
+		else {
+			m_characterSelectShape->setPosition(0, 0);
+			m_highlightCharacter = false;
+		}
+		break;
 	}
-}
-
-void Game::render() {
-    m_window.clear();
-	m_window.draw(m_background);
-	for (GameObject* gameObject : m_gameObjects) {
-		gameObject->draw(m_window);
-	}
-	if (m_showSelectShape)
-		m_window.draw(*m_characterSelectShape);
-	if (m_gameState == GameState::GameWon)
-		m_window.draw(m_gameWonText);
-	m_window.display();
+	};
 }
 
 void Game::initializeState() {
@@ -231,7 +246,7 @@ void Game::initializeState() {
 		delete gameObject;
 	}
 	switch (m_gameState) {
-	case (GameState::Starting) : {
+	case GameState::Starting: {
 		//Set new background
 		m_backgroundTexture.loadFromFile("content/chooseFighter.jpg");
 		m_background.setTexture(m_backgroundTexture);
@@ -242,12 +257,110 @@ void Game::initializeState() {
 		m_characterSelectShape->setOutlineColor(sf::Color::Green);
 		m_characterSelectShape->setOutlineThickness(3.5f);
 		m_characterSelectShape->setFillColor(sf::Color::Transparent);
+		//Set up text to describe characters
+		m_characterText.setFont(m_gameFont);
+		m_characterText.setCharacterSize(25);
+		m_characterText.setFillColor(sf::Color(196, 169, 86));
+		m_characterText.setPosition(340, 70);
 		//Change gameState
 		m_gameState = GameState::PlayerSelect;
+		break;
+	}
+	case GameState::PlayerSelect: {
+		//Stop displaying character select shape
+		m_highlightCharacter = false;
+		//Set new background
+		m_backgroundTexture.loadFromFile("content/theCourtyard.jpg");
+		m_background.setTexture(m_backgroundTexture);
+		switch (m_meme) {
+		case Meme::Harambe: {
+			//display harambe
+			m_gameObject0 = new RegularGameObject();
+			m_gameObject0->load("content/harambe64.png");
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->setScale(0.8f);
+			m_gameObject0->setPosition(120, 230);
+			break;
+		}
+		case Meme::Kangaroo: {
+			//display kangaroo
+			m_gameObject0 = new RegularGameObject();
+			m_gameObject0->load("content/kangaroo64.png");
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->setScale(0.8f);
+			m_gameObject0->setPosition(120, 230);
+			break;
+		}
+		case Meme::EvilKermit: {
+			//display evil kermit
+			m_gameObject0 = new RegularGameObject();
+			m_gameObject0->load("content/evilKermit64.png");
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->setScale(0.8f);
+			m_gameObject0->setPosition(120, 230);
+			break;
+		}
+		case Meme::Pepe: {
+			//display pepe
+			m_gameObject0 = new RegularGameObject();
+			m_gameObject0->load("content/pepe64.png");
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->setScale(0.8f);
+			m_gameObject0->setPosition(120, 230);
+			break;
+		}
+		case Meme::DatBoi: {
+			//display dat boi
+			m_gameObject0 = new RegularGameObject();
+			m_gameObject0->load("content/datBoi64.png");
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->setScale(0.8f);
+			m_gameObject0->setPosition(120, 230);
+			break;
+		}
+		case Meme::JoeBiden: {
+			//display joe biden
+			m_gameObject0 = new RegularGameObject();
+			m_gameObject0->load("content/joeBiden64.png");
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->setScale(0.8f);
+			m_gameObject0->setPosition(120, 230);
+			break;
+		}
+		case Meme::Spongegar: {
+			//display spongegar
+			m_gameObject0 = new RegularGameObject();
+			m_gameObject0->load("content/spongegar64.png");
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->setScale(0.8f);
+			m_gameObject0->setPosition(120, 230);
+			break;
+		}
+		};
+		m_gameObjects = { m_gameObject0 };
+		//Change gamestate
+		m_gameState = GameState::Fighting;
+		m_transition = false;
+		break;
 	}
 	};
 	//Make sure the transition ends
 	m_transition = false;
+}
+
+void Game::render() {
+    m_window.clear();
+	m_window.draw(m_background);
+	for (GameObject* gameObject : m_gameObjects) {
+		gameObject->draw(m_window);
+	}
+	if (m_highlightCharacter) {
+		m_window.draw(*m_characterSelectShape);
+		m_window.draw(m_characterText);
+	}
+	if (m_gameState == GameState::GameWon)
+		m_window.draw(m_gameWonText);
+	m_window.display();
 }
 
 bool Game::isOutOfBounds(float x, float y) {
