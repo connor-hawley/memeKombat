@@ -4,13 +4,35 @@
 
 #include "AnimatedGameObject.h"
 
-AnimatedGameObject::AnimatedGameObject(float spriteInterval, bool isPlayer) {
+AnimatedGameObject::AnimatedGameObject(float spriteInterval, PlayerType playerType) {
 	m_spriteInterval = spriteInterval;
 	m_spriteIntervalMove = spriteInterval;
-	m_isPlayer = isPlayer;
-	if (m_isPlayer)
+	m_playerType = playerType;
+	if (m_playerType == local || m_playerType == remote || m_playerType == ai) {
 		m_spriteIntervalIdle = m_spriteIntervalMove + 1.85f;
+		m_healthBarOutline = new sf::RectangleShape(sf::Vector2<float>(300, 25));
+		m_healthBarOutline->setFillColor(sf::Color::Transparent);
+		m_healthBarOutline->setOutlineColor(sf::Color::Yellow);
+		m_healthBarOutline->setOutlineThickness(3.5f);
+		m_healthBarFill = new sf::RectangleShape(sf::Vector2<float>(300, 25));
+		m_healthBarFill->setFillColor(sf::Color::Green);
+		if (m_playerType == local) {
+			m_healthBarOutline->setPosition(40, 30);
+			m_healthBarFill->setPosition(40, 30);
+		}
+		else {
+			m_healthBarOutline->setPosition(440, 30);
+			m_healthBarFill->setPosition(440, 30);
+		}
+	}
 	m_currentTextureRect = 0;
+}
+
+AnimatedGameObject::~AnimatedGameObject() {
+	if (m_playerType == local || m_playerType == remote || m_playerType == ai) {
+		delete m_healthBarOutline;
+		delete m_healthBarFill;
+	}
 }
 
 bool AnimatedGameObject::load(const std::string& filename) {
@@ -26,8 +48,14 @@ bool AnimatedGameObject::load(const std::string& filename) {
 
 
 void AnimatedGameObject::draw(sf::RenderWindow& window) {
-	if (m_valid)
+	if (m_valid) {
 		window.draw(m_sprite);
+		if (m_playerType == local || m_playerType == remote || m_playerType == ai) {
+			m_healthBarFill->setSize(sf::Vector2<float>(m_health * 3, 25));
+			window.draw(*m_healthBarOutline);
+			window.draw(*m_healthBarFill);
+		}
+	}
 }
 
 void AnimatedGameObject::update() {
@@ -35,18 +63,20 @@ void AnimatedGameObject::update() {
 		nextTextureRect();
 		m_clock.restart();
 	} 
-	if (m_strobe) {
+	switch (m_playerType) {
+	case strobe: {
 		sf::Vector2<float> currentPos = this->getPosition();
 		if (m_strobeDestination - m_strobeInitial > 0
 			&& m_strobeDestination - currentPos.x > 0)
 			move(sf::Vector2<float>(40.0f, 0) * m_strobeClock.getElapsedTime().asSeconds());
-		else if (m_strobeDestination - m_strobeInitial < 0 
-			&& m_strobeDestination - currentPos.x < 0) 
+		else if (m_strobeDestination - m_strobeInitial < 0
+			&& m_strobeDestination - currentPos.x < 0)
 			move(sf::Vector2<float>(-40.0f, 0) * m_strobeClock.getElapsedTime().asSeconds());
-		else 
+		else
 			setStrobeInterval(m_strobeInitial - m_strobeDestination);
 		m_strobeClock.restart();
 	}
+	};
 }
 
 void AnimatedGameObject::move(sf::Vector2f loc) {
@@ -111,7 +141,7 @@ void AnimatedGameObject::setStrobeInterval(float strobeInterval) {
 	m_strobeDestination = m_strobeInitial + strobeInterval;
 }
 
-void AnimatedGameObject::useAnimations(GameObject::Direction dir) {
+void AnimatedGameObject::useAnimations(Direction dir) {
 	switch (dir) {
 	case up: {
 		m_intRectRef = &m_intRectsUp;
@@ -143,7 +173,7 @@ void AnimatedGameObject::useAnimations(GameObject::Direction dir) {
 	}
 	case none: {
 		m_intRectRef = &m_intRectsNone;
-		if (m_isPlayer)
+		if (m_playerType != strobe && m_playerType != other)
 			this->setSpriteInterval(m_spriteIntervalIdle);
 		else
 			this->setSpriteInterval(m_spriteIntervalMove);
@@ -158,3 +188,5 @@ void AnimatedGameObject::useAnimations(GameObject::Direction dir) {
 float AnimatedGameObject::getSpeed() { return m_speed; }
 
 GameObject::Direction AnimatedGameObject::getLastDirection() { return m_lastDirection; }
+
+GameObject::PlayerType AnimatedGameObject::getPlayerType() { return m_playerType; }

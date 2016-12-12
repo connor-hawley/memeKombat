@@ -12,7 +12,9 @@ public:
 	bool m_right = false;
 	bool m_up = false;
 	bool m_down = false;
+	float m_health = 100.0f;
 	enum Direction { up, down, left, right, none };
+	enum PlayerType { local, remote, ai, strobe, other };
 
     virtual bool load(const std::string& filename) = 0;
 

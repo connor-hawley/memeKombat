@@ -21,17 +21,14 @@ public:
 private:
     void processEvents();
 	//handle input from the user
-	void handlePlayerInput(sf::Event event, bool isDown);
+	void handlePlayerInput(sf::Event event);
 	//update the game objects
 	void update(sf::Time deltaT);
 	//sets up various stages during the game
 	void initializeState();
     //draw the scene
     void render();
-    
-	
-	//test for going out of bounds
-	bool isOutOfBounds(float x, float y);
+
 	//test for winning game
 	GameState isGameWon(float x, float y);
 
@@ -49,10 +46,6 @@ private:
 
     GameObject* m_gameObject0;
 	GameObject* m_gameObject1;
-	//GameObject* m_fairy;
-	//GameObject* m_lumberjacks;
-	//GameObject* m_monster;
-	//GameObject* m_oldMan;
 	std::vector<GameObject*> m_gameObjects;
 	GameState m_gameState = GameState::Starting;
 	Meme m_meme;

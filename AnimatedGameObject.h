@@ -8,9 +8,9 @@
 
 class AnimatedGameObject : public GameObject {
 public:
-    AnimatedGameObject(float spriteInterval, bool isPlayer);
+    AnimatedGameObject(float spriteInterval, PlayerType playerType);
 
-	~AnimatedGameObject() {}
+	~AnimatedGameObject();
 	
     bool load(const std::string &filename);
 
@@ -44,7 +44,9 @@ public:
 
 	float getSpeed();
 
-	GameObject::Direction getLastDirection();
+	Direction getLastDirection();
+
+	PlayerType getPlayerType();
 
 private:
     sf::Sprite m_sprite;
@@ -52,6 +54,8 @@ private:
 	sf::Clock m_clock;
 	sf::Clock m_strobeClock;
 	std::string m_filename;
+	sf::RectangleShape* m_healthBarOutline;
+	sf::RectangleShape* m_healthBarFill;
 
 	std::vector<sf::Rect<int>> m_intRectsDown;
 	std::vector<sf::Rect<int>> m_intRectsRight;
@@ -59,11 +63,12 @@ private:
 	std::vector<sf::Rect<int>> m_intRectsLeft;
 	std::vector<sf::Rect<int>> m_intRectsNone;
 	std::vector<sf::Rect<int>> *m_intRectRef;
-	GameObject::Direction m_lastDirection = none;
+	Direction m_lastDirection;
+	PlayerType m_playerType;
+
 
 	bool m_valid = false;
 	bool m_strobe = false;
-	bool m_isPlayer = false;
 	int m_currentTextureRect;
 	float m_spriteInterval;
 	float m_spriteIntervalIdle;
