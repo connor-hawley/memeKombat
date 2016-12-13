@@ -52,15 +52,21 @@ private:
     sf::Sprite m_sprite;
 	sf::Texture m_texture;
 	sf::Clock m_clock;
-	sf::Clock m_strobeClock;
+	sf::Clock m_animationClock;
 	std::string m_filename;
 	sf::RectangleShape* m_healthBarOutline;
 	sf::RectangleShape* m_healthBarFill;
 
-	std::vector<sf::Rect<int>> m_intRectsDown;
-	std::vector<sf::Rect<int>> m_intRectsRight;
 	std::vector<sf::Rect<int>> m_intRectsUp;
+	std::vector<sf::Rect<int>> m_intRectsDown;
 	std::vector<sf::Rect<int>> m_intRectsLeft;
+	std::vector<sf::Rect<int>> m_intRectsRight;
+	std::vector<sf::Rect<int>> m_intRectsPunch;
+	std::vector<sf::Rect<int>> m_intRectsCrouchPunch;
+	std::vector<sf::Rect<int>> m_intRectsBlock;
+	std::vector<sf::Rect<int>> m_intRectsCrouchBlock;
+	std::vector<sf::Rect<int>> m_intRectsKick;
+	std::vector<sf::Rect<int>> m_intRectsCrouchKick;
 	std::vector<sf::Rect<int>> m_intRectsNone;
 	std::vector<sf::Rect<int>> *m_intRectRef;
 	Direction m_lastDirection;

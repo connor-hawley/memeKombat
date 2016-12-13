@@ -10,10 +10,15 @@ public:
 	bool m_isStuck = false;
 	bool m_left = false;
 	bool m_right = false;
-	bool m_up = false;
 	bool m_down = false;
+	bool m_crouch = false;
+	bool m_block = false;
+	bool m_animationTriggered = false;
+	bool m_canPunch = true;
+	bool m_canKick = true;
+	int m_counter = 0;
 	float m_health = 100.0f;
-	enum Direction { up, down, left, right, none };
+	enum Direction { up, down, left, right, punch, crouchPunch, block, crouchBlock, kick, crouchKick, none };
 	enum PlayerType { local, remote, ai, strobe, other };
 
     virtual bool load(const std::string& filename) = 0;

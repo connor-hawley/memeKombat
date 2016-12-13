@@ -3,6 +3,8 @@
 //
 #pragma once
 
+#include <stdlib.h>
+#include <time.h>
 #include <SFML/Graphics.hpp>
 #include "GameObject.h"
 #include "RegularGameObject.h"
@@ -41,16 +43,12 @@ private:
 	sf::Text m_characterText;
 	sf::Text m_gameWonText;
 	
-	
-	
-
     GameObject* m_gameObject0;
 	GameObject* m_gameObject1;
 	std::vector<GameObject*> m_gameObjects;
 	GameState m_gameState = GameState::Starting;
-	Meme m_meme;
+	Meme m_player, m_remote, m_ai;
 	bool m_transition = false;
-
 	bool m_highlightCharacter = false;
 };
 

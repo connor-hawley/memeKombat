@@ -62,19 +62,27 @@ void AnimatedGameObject::update() {
 	if (m_clock.getElapsedTime().asSeconds() > m_spriteInterval) {
 		nextTextureRect();
 		m_clock.restart();
-	} 
+		if (m_animationTriggered) {
+			++m_counter;
+		}
+	}
+	if (m_counter == m_intRectRef->size()) {
+		m_counter = 0;
+		m_animationTriggered = false;
+		useAnimations(none);
+	}
 	switch (m_playerType) {
 	case strobe: {
 		sf::Vector2<float> currentPos = this->getPosition();
 		if (m_strobeDestination - m_strobeInitial > 0
 			&& m_strobeDestination - currentPos.x > 0)
-			move(sf::Vector2<float>(40.0f, 0) * m_strobeClock.getElapsedTime().asSeconds());
+			move(sf::Vector2<float>(40.0f, 0) * m_animationClock.getElapsedTime().asSeconds());
 		else if (m_strobeDestination - m_strobeInitial < 0
 			&& m_strobeDestination - currentPos.x < 0)
-			move(sf::Vector2<float>(-40.0f, 0) * m_strobeClock.getElapsedTime().asSeconds());
+			move(sf::Vector2<float>(-40.0f, 0) * m_animationClock.getElapsedTime().asSeconds());
 		else
 			setStrobeInterval(m_strobeInitial - m_strobeDestination);
-		m_strobeClock.restart();
+		m_animationClock.restart();
 	}
 	};
 }
@@ -171,9 +179,39 @@ void AnimatedGameObject::useAnimations(Direction dir) {
 			m_lastDirection = right;
 		break;
 	}
+	case punch: {
+		m_intRectRef = &m_intRectsPunch;
+		this->setSpriteInterval(m_spriteIntervalMove);
+		break;
+	}
+	case crouchPunch: {
+		m_intRectRef = &m_intRectsCrouchPunch;
+		this->setSpriteInterval(m_spriteIntervalMove);
+		break;
+	}
+	case block: {
+		m_intRectRef = &m_intRectsBlock;
+		this->setSpriteInterval(m_spriteIntervalMove);
+		break;
+	}
+	case crouchBlock: {
+		m_intRectRef = &m_intRectsCrouchBlock;
+		this->setSpriteInterval(m_spriteIntervalMove);
+		break;
+	}
+	case kick: {
+		m_intRectRef = &m_intRectsKick;
+		this->setSpriteInterval(m_spriteIntervalMove);
+		break;
+	}
+	case crouchKick: {
+		m_intRectRef = &m_intRectsCrouchKick;
+		this->setSpriteInterval(m_spriteIntervalMove);
+		break;
+	}
 	case none: {
 		m_intRectRef = &m_intRectsNone;
-		if (m_playerType != strobe && m_playerType != other)
+		if (m_playerType == local || m_playerType == remote || m_playerType == ai)
 			this->setSpriteInterval(m_spriteIntervalIdle);
 		else
 			this->setSpriteInterval(m_spriteIntervalMove);
