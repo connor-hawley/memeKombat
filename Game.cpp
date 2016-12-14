@@ -25,10 +25,7 @@ Game::Game() :
 
 	//make game font
 	m_gameFont.loadFromFile("content/comicSans.ttf");
-	m_gameWonText.setFont(m_gameFont);
-	m_gameWonText.setString("GAME OVER");
-	m_gameWonText.setCharacterSize(55);
-	m_gameWonText.setFillColor(sf::Color(196, 169, 86));
+	
 }
 
 void Game::run() {
@@ -37,7 +34,7 @@ void Game::run() {
 		if (!m_transition) {
 			sf::Time deltaT = clock.restart();
 			processEvents();
-			if (m_gameState != GameState::GameWon && m_gameState != GameState::GameOver) {
+			if (m_gameState != GameOver) {
 				update(deltaT);
 				render();
 			}
@@ -52,21 +49,21 @@ void Game::processEvents() {
     sf::Event event;
     while(m_window.pollEvent(event)) {
         switch(event.type) {
-            case sf::Event::KeyPressed :
+            case sf::Event::KeyPressed:
                 handlePlayerInput(event);
                 break;
-            case sf::Event::KeyReleased :
+			case sf::Event::KeyReleased:
                 handlePlayerInput(event);
                 break;
-			case sf::Event::MouseButtonReleased :
+			case sf::Event::MouseButtonReleased:
 				handlePlayerInput(event);
 				break;
-			case sf::Event::Closed : {
+			case sf::Event::Closed: {
 				for (GameObject* gameObject : m_gameObjects) {
 					delete gameObject;
 				}
 				delete m_characterSelectShape;
-				m_gameState = GameState::GameOver;
+				m_gameState = GameOver;
 				m_window.close();
 				break;
 			}
@@ -77,7 +74,7 @@ void Game::processEvents() {
 
 void Game::handlePlayerInput(sf::Event event) {
 	switch (m_gameState) {
-	case GameState::Starting : {
+	case Starting : {
 		if (event.type == sf::Event::EventType::KeyReleased) {
 			if (event.key.code == sf::Keyboard::Return) {
 				m_transition = true;
@@ -85,44 +82,81 @@ void Game::handlePlayerInput(sf::Event event) {
 		}
 		break;
 	}
-	case GameState::PlayerSelect : {
-		if (event.type == sf::Event::EventType::MouseButtonReleased) {
+	case Lore: {
+		if (event.type == sf::Event::EventType::KeyReleased) {
+			if (event.key.code == sf::Keyboard::Return) {
+				m_transition = true;
+			}
+		}
+		break;
+	}
+	case Menu: {
+		if (event.type = sf::Event::EventType::MouseButtonReleased) {
 			sf::Event::MouseButtonEvent mouseEvent = event.mouseButton;
 			if (mouseEvent.button == sf::Mouse::Button::Left) {
 				sf::Vector2<float> shapeLoc = m_characterSelectShape->getPosition();
-				if (shapeLoc.x == 65 && shapeLoc.y == 78) {
-					m_player = Meme::Harambe;
+				if (shapeLoc.x == 290 && shapeLoc.y == 90) {
+					m_gameMode = SinglePlayer;
 					m_transition = true;
 				}
-				else if (shapeLoc.x == 200 && shapeLoc.y == 78) {
-					m_player = Meme::Kangaroo;
+				else if (shapeLoc.x == 290 && shapeLoc.y == 190) {
+					m_gameMode = TwoPlayer;
 					m_transition = true;
 				}
-				else if (shapeLoc.x == 200 && shapeLoc.y == 225) {
-					m_player = Meme::EvilKermit;
-					m_transition = true;
-				}
-				else if (shapeLoc.x == 335 && shapeLoc.y == 225) {
-					m_player = Meme::Pepe;
-					m_transition = true;
-				}
-				else if (shapeLoc.x == 470 && shapeLoc.y == 225) {
-					m_player = Meme::DatBoi;
-					m_transition = true;
-				}
-				else if (shapeLoc.x == 470 && shapeLoc.y == 78) {
-					m_player = Meme::JoeBiden;
-					m_transition = true;
-				}
-				else if (shapeLoc.x == 600 && shapeLoc.y == 78) {
-					m_player = Meme::Spongegar;
+				else if (shapeLoc.x == 290 && shapeLoc.y == 280) {
+					m_gameMode = Controls;
 					m_transition = true;
 				}
 			}
 		}
 		break;
 	}
-	case GameState::Fighting : {
+	case Control: {
+		if (event.type == sf::Event::EventType::KeyReleased) {
+			if (event.key.code == sf::Keyboard::Return) {
+				m_transition = true;
+			}
+		}
+		break;
+	}
+	case PlayerSelect : {
+		if (event.type == sf::Event::EventType::MouseButtonReleased) {
+			sf::Event::MouseButtonEvent mouseEvent = event.mouseButton;
+			if (mouseEvent.button == sf::Mouse::Button::Left) {
+				sf::Vector2<float> shapeLoc = m_characterSelectShape->getPosition();
+				if (shapeLoc.x == 65 && shapeLoc.y == 78) {
+					m_player = Harambe;
+					m_transition = true;
+				}
+				else if (shapeLoc.x == 200 && shapeLoc.y == 78) {
+					m_player = Kangaroo;
+					m_transition = true;
+				}
+				else if (shapeLoc.x == 200 && shapeLoc.y == 225) {
+					m_player = EvilKermit;
+					m_transition = true;
+				}
+				else if (shapeLoc.x == 335 && shapeLoc.y == 225) {
+					m_player = Pepe;
+					m_transition = true;
+				}
+				else if (shapeLoc.x == 470 && shapeLoc.y == 225) {
+					m_player = DatBoi;
+					m_transition = true;
+				}
+				else if (shapeLoc.x == 470 && shapeLoc.y == 78) {
+					m_player = JoeBiden;
+					m_transition = true;
+				}
+				else if (shapeLoc.x == 600 && shapeLoc.y == 78) {
+					m_player = Spongegar;
+					m_transition = true;
+				}
+			}
+		}
+		break;
+	}
+	case Fighting : {
 		if (!m_gameObject0->m_animationTriggered) {
 			if (event.type == sf::Event::EventType::KeyPressed) {
 				//handle extra buttons. modern emulator controls are 
@@ -156,7 +190,13 @@ void Game::handlePlayerInput(sf::Event event) {
 						m_gameObject0->m_animationTriggered = true;
 						if (((x1 > x0 && x1 - x0 < 95) || (x0 > x1 && x0 - x1 < 95))
 							&& !(m_gameObject1->m_down || m_gameObject1->m_block)) {
-							m_gameObject1->m_health -= 3;
+							m_highScore += 1;
+							if (m_gameObject1->m_health - 3 > 0)
+								m_gameObject1->m_health -= 3;
+							else {
+								m_gameObject1->m_health = 0;
+								m_transition = true;
+							}
 						}
 					}
 					else if (m_gameObject0->m_down && m_gameObject0->m_canPunch) {
@@ -165,7 +205,13 @@ void Game::handlePlayerInput(sf::Event event) {
 						m_gameObject0->m_animationTriggered = true;
 						if (((x1 > x0 && x1 - x0 < 95) || (x0 > x1 && x0 - x1 < 95))
 							&& !(m_gameObject1->m_down || m_gameObject1->m_block)) {
-							m_gameObject1->m_health -= 10;
+							m_highScore += 30;
+							if (m_gameObject1->m_health - 10 > 0)
+								m_gameObject1->m_health -= 10;
+							else {
+								m_gameObject1->m_health = 0;
+								m_transition = true;
+							}
 						}
 					}
 				}
@@ -188,7 +234,13 @@ void Game::handlePlayerInput(sf::Event event) {
 						m_gameObject0->m_animationTriggered = true;
 						if (((x1 > x0 && x1 - x0 < 95) || (x0 > x1 && x0 - x1 < 95))
 							&& !(m_gameObject1->m_down || m_gameObject1->m_block)) {
-							m_gameObject1->m_health -= 7;
+							m_highScore += 7;
+							if (m_gameObject1->m_health - 7 > 0)
+								m_gameObject1->m_health -= 7;
+							else {
+								m_gameObject1->m_health = 0;
+								m_transition = true;
+							}
 						}
 					}
 					else if (m_gameObject0->m_down && m_gameObject0->m_canKick) {
@@ -197,7 +249,13 @@ void Game::handlePlayerInput(sf::Event event) {
 						m_gameObject0->m_animationTriggered = true;
 						if (((x1 > x0 && x1 - x0 < 95) || (x0 > x1 && x0 - x1 < 95))
 							&& !m_gameObject1->m_block) {
-							m_gameObject1->m_health -= 5;
+							m_highScore += 2;
+							if (m_gameObject1->m_health - 5 > 0)
+								m_gameObject1->m_health -= 5;
+							else {
+								m_gameObject1->m_health = 0;
+								m_transition = true;
+							}
 						}
 					}
 				}
@@ -240,6 +298,14 @@ void Game::handlePlayerInput(sf::Event event) {
 		}
 		break;
 	}
+	case GameWon: {
+		if (event.type == sf::Event::EventType::KeyReleased) {
+			if (event.key.code == sf::Keyboard::Return) {
+				m_transition = true;
+			}
+		}
+		break;
+	}
 	};
 }
 
@@ -249,9 +315,30 @@ void Game::update(sf::Time deltaT) {
 	for (GameObject* gameObject : m_gameObjects) {
 		gameObject->update();
 	}
-	//highlights the character the player is hovering over
 	switch (m_gameState) {
-	case GameState::PlayerSelect : {
+	case Menu: {
+		//highlights the menu option the player selected
+
+		sf::Vector2<int> mouseLoc = sf::Mouse::getPosition(m_window);
+		if (mouseLoc.x > 290 && mouseLoc.x < 520 && mouseLoc.y > 90 && mouseLoc.y < 157) {
+			m_characterSelectShape->setPosition(290, 90);
+			m_highlightCharacter = true;
+		}
+		else if (mouseLoc.x > 290 && mouseLoc.x < 520 && mouseLoc.y > 190 && mouseLoc.y < 257) {
+			m_characterSelectShape->setPosition(290, 190);
+			m_highlightCharacter = true;
+		}
+		else if (mouseLoc.x > 290 && mouseLoc.x < 520 && mouseLoc.y > 280 && mouseLoc.y < 347) {
+			m_characterSelectShape->setPosition(290, 280);
+			m_highlightCharacter = true;
+		}
+		else {
+			m_characterSelectShape->setPosition(0, 0);
+			m_highlightCharacter = false;
+		}
+		break;
+	}
+	case PlayerSelect : {
 		sf::Vector2<int> mouseLoc = sf::Mouse::getPosition(m_window);
 		if (mouseLoc.x > 65 && mouseLoc.x < 190 && mouseLoc.y > 78 && mouseLoc.y < 215) {
 			m_characterSelectShape->setPosition(65, 78);
@@ -294,7 +381,7 @@ void Game::update(sf::Time deltaT) {
 		}
 		break;
 	}
-	case GameState::Fighting: {
+	case Fighting: {
 		sf::Vector2<float> movement(0.0f, 0.0f);
 		if (m_gameObject0->m_left)
 			movement.x -= m_gameObject0->getSpeed();
@@ -321,6 +408,8 @@ void Game::update(sf::Time deltaT) {
 			}
 			};
 		}
+		//update high score
+		m_highScoreText.setString(std::to_string(m_highScore));
 	}
 	};
 }
@@ -331,34 +420,113 @@ void Game::initializeState() {
 		delete gameObject;
 	}
 	switch (m_gameState) {
-	case GameState::Starting: {
-		//Set new background
-		m_backgroundTexture.loadFromFile("content/chooseFighter.jpg");
-		m_background.setTexture(m_backgroundTexture);
-		//Make new gameObjects
+	case Starting: {
+		//set background
+		m_characterSelectShape = new sf::RectangleShape(sf::Vector2<float>(800, 450));
+		m_characterSelectShape->setOutlineColor(sf::Color::Transparent);
+		m_characterSelectShape->setFillColor(sf::Color::Black);
+		//m_backgroundTexture.loadFromFile("content/blackScreen.png");
+		//m_background.setTexture(m_backgroundTexture);
+		//spicy memes
 		m_gameObjects = {};
-		//Make new character select rectangle
-		m_characterSelectShape = new sf::RectangleShape(sf::Vector2<float>(120, 134));
-		m_characterSelectShape->setOutlineColor(sf::Color::Green);
-		m_characterSelectShape->setOutlineThickness(3.5f);
-		m_characterSelectShape->setFillColor(sf::Color::Transparent);
-		//Set up text to describe characters
+		//repurposing character text for lore screen
 		m_characterText.setFont(m_gameFont);
-		m_characterText.setCharacterSize(25);
-		m_characterText.setFillColor(sf::Color(196, 169, 86));
-		m_characterText.setPosition(340, 70);
-		//Change gameState
-		m_gameState = GameState::PlayerSelect;
+		m_characterText.setCharacterSize(16);
+		m_characterText.setFillColor(sf::Color(0, 245, 61));
+		m_characterText.setPosition(75, 150);
+		m_characterText.setString("Once upon a time, in a meme world far, far away, all the memes lived happily in peace.\nThen, one day, the shit-posters attacked, turning the memes against each other.\nNow, the memes battle to determine the spiciest meme of all.\n\n\nPRESS ENTER TO CONTINUE");
+		m_gameState = Lore;
+		m_transition = false;
 		break;
 	}
-	case GameState::PlayerSelect: {
+	case Control:
+	case Lore: {
+		//delete character select shape
+		delete m_characterSelectShape;
+		//create selection shape
+		m_characterSelectShape = new sf::RectangleShape(sf::Vector2<float>(230, 67));
+		m_characterSelectShape->setOutlineColor(sf::Color::Blue);
+		m_characterSelectShape->setOutlineThickness(3.5f);
+		m_characterSelectShape->setFillColor(sf::Color::Transparent);
+		m_characterSelectShape->setPosition(290, 90);
+		//load background
+		m_backgroundTexture.loadFromFile("content/blackScreen.png");
+		m_background.setTexture(m_backgroundTexture);
+		//spicy memes
+		m_gameObjects = {};
+		//repurposing character text for menu
+		m_characterText.setCharacterSize(35);
+		m_characterText.setFillColor(sf::Color(196, 169, 86));
+		m_characterText.setPosition(300, 100);
+		m_characterText.setString("Single Player\n\nTwo Player\n\nControls");
+		m_gameState = Menu;
+		m_transition = false;
+		break;
+	}
+	case Menu: {
+		switch (m_gameMode) {
+		case SinglePlayer: {
+			//Set new background
+			m_backgroundTexture.loadFromFile("content/chooseFighter.jpg");
+			m_background.setTexture(m_backgroundTexture);
+			//Make new gameObjects
+			m_gameObjects = {};
+			//Make new character select rectangle
+			delete m_characterSelectShape;
+			m_characterSelectShape = new sf::RectangleShape(sf::Vector2<float>(120, 134));
+			m_characterSelectShape->setOutlineColor(sf::Color::Green);
+			m_characterSelectShape->setOutlineThickness(3.5f);
+			m_characterSelectShape->setFillColor(sf::Color::Transparent);
+			//Set up text to describe characters
+			m_characterText.setCharacterSize(25);
+			m_characterText.setFillColor(sf::Color(196, 169, 86));
+			m_characterText.setPosition(340, 70);
+			m_characterText.setOutlineColor(sf::Color::Black);
+			m_characterText.setOutlineThickness(2);
+			//Change gameState
+			m_gameState = PlayerSelect;
+			break;
+		}
+		case TwoPlayer: {
+			//NITISH START HERE
+			break;
+		}
+		case Controls: {
+			//Set new background
+			m_backgroundTexture.loadFromFile("content/blackScreen.png");
+			m_background.setTexture(m_backgroundTexture);
+			//Make new gameObjects
+			m_gameObjects = {};
+			//Make new character select rectangle
+			m_highlightCharacter = false;
+			//Write out controls
+			m_characterText.setCharacterSize(35);
+			m_characterText.setFillColor(sf::Color(196, 169, 86));
+			m_characterText.setPosition(150, 30);
+			m_characterText.setString("-Left/Right - move\n-Down - crouch\n-Z - punch\n-X - block\n-C - kick\n\nPress enter to go back");
+			m_gameState = Control;
+			break;
+		}
+		};
+		m_transition = false;
+		break;
+	}
+	case PlayerSelect: {
 		//Stop displaying character select shape
 		m_highlightCharacter = false;
 		//Set new background
 		m_backgroundTexture.loadFromFile("content/theCourtyard.jpg");
 		m_background.setTexture(m_backgroundTexture);
+		//Set up high score text
+		m_highScoreText.setFont(m_gameFont);
+		m_highScoreText.setCharacterSize(50);
+		m_highScoreText.setString(std::to_string(m_highScore));
+		m_highScoreText.setFillColor(sf::Color(196, 169, 86));
+		m_highScoreText.setPosition(350, 10);
+		m_highScoreText.setOutlineColor(sf::Color::Black);
+		m_highScoreText.setOutlineThickness(2);
 		switch (m_player) {
-		case Meme::Harambe: {
+		case Harambe: {
 			//display harambe
 			/*m_gameObject0 = new RegularGameObject();
 			m_gameObject0->load("content/harambe64.png");
@@ -375,13 +543,25 @@ void Game::initializeState() {
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::right);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::punch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchPunch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::block);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchBlock);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::kick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchKick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
 			m_gameObject0->setPosition(120, 230);
 			break;
 		}
-		case Meme::Kangaroo: {
+		case Kangaroo: {
 			//display kangaroo
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
 			m_gameObject0->load("content/kangaroo64.png");
@@ -393,13 +573,25 @@ void Game::initializeState() {
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::right);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::punch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchPunch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::block);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchBlock);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::kick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchKick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
 			m_gameObject0->setPosition(120, 230);
 			break;
 		}
-		case Meme::EvilKermit: {
+		case EvilKermit: {
 			//display evil kermit
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
 			m_gameObject0->load("content/evilKermit64.png");
@@ -411,13 +603,25 @@ void Game::initializeState() {
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::right);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::punch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchPunch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::block);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchBlock);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::kick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchKick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
 			m_gameObject0->setPosition(120, 230);
 			break;
 		}
-		case Meme::Pepe: {
+		case Pepe: {
 			//display pepe
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
 			m_gameObject0->load("content/pepe64.png");
@@ -429,13 +633,25 @@ void Game::initializeState() {
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::right);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::punch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchPunch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::block);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchBlock);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::kick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchKick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
 			m_gameObject0->setPosition(120, 230);
 			break;
 		}
-		case Meme::DatBoi: {
+		case DatBoi: {
 			//display dat boi
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
 			m_gameObject0->load("content/datBoi64.png");
@@ -447,13 +663,25 @@ void Game::initializeState() {
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::right);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::punch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchPunch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::block);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchBlock);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::kick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchKick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
 			m_gameObject0->setPosition(120, 230);
 			break;
 		}
-		case Meme::JoeBiden: {
+		case JoeBiden: {
 			//display joe biden
 			m_gameObject0 = new AnimatedGameObject(0.20f, GameObject::PlayerType::local);
 			m_gameObject0->load("content/joeBidenSprites.png");
@@ -506,7 +734,7 @@ void Game::initializeState() {
 			m_gameObject0->setPosition(120, 206);
 			break;
 		}
-		case Meme::Spongegar: {
+		case Spongegar: {
 			//display spongegar
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
 			m_gameObject0->load("content/spongegar64.png");
@@ -517,6 +745,18 @@ void Game::initializeState() {
 			m_gameObject0->useAnimations(GameObject::Direction::left);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::right);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::punch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchPunch);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::block);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchBlock);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::kick);
+			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+			m_gameObject0->useAnimations(GameObject::Direction::crouchKick);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
@@ -531,9 +771,9 @@ void Game::initializeState() {
 			srand(time(NULL));
 			int random = rand() % 6; //random number 0 to 6
 			switch (random) {
-			case Meme::Harambe: {
+			case Harambe: {
 				//ai is harambe
-				m_ai = Meme::Harambe;
+				m_ai = Harambe;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
 				m_gameObject1->load("content/harambe64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
@@ -544,15 +784,27 @@ void Game::initializeState() {
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::right);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::punch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchPunch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::block);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchBlock);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::kick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchKick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
 				m_gameObject1->setPosition(560, 230);
 				break;
 			}
-			case Meme::Kangaroo: {
+			case Kangaroo: {
 				//ai is kangaroo
-				m_ai = Meme::Kangaroo;
+				m_ai = Kangaroo;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
 				m_gameObject1->load("content/kangaroo64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
@@ -563,15 +815,27 @@ void Game::initializeState() {
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::right);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::punch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchPunch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::block);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchBlock);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::kick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchKick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
 				m_gameObject1->setPosition(560, 230);
 				break;
 			}
-			case Meme::EvilKermit: {
+			case EvilKermit: {
 				//ai is evil kermit
-				m_ai = Meme::EvilKermit;
+				m_ai = EvilKermit;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
 				m_gameObject1->load("content/evilKermit64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
@@ -582,15 +846,27 @@ void Game::initializeState() {
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::right);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::punch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchPunch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::block);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchBlock);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::kick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchKick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
 				m_gameObject1->setPosition(560, 230);
 				break;
 			}
-			case Meme::Pepe: {
+			case Pepe: {
 				//ai is pepe
-				m_ai = Meme::Pepe;
+				m_ai = Pepe;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
 				m_gameObject1->load("content/pepe64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
@@ -601,15 +877,27 @@ void Game::initializeState() {
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::right);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::punch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchPunch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::block);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchBlock);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::kick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchKick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
 				m_gameObject1->setPosition(560, 230);
 				break;
 			}
-			case Meme::DatBoi: {
+			case DatBoi: {
 				//ai is dat boi
-				m_ai = Meme::DatBoi;
+				m_ai = DatBoi;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
 				m_gameObject1->load("content/datBoi64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
@@ -620,15 +908,27 @@ void Game::initializeState() {
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::right);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::punch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchPunch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::block);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchBlock);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::kick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchKick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
 				m_gameObject1->setPosition(560, 230);
 				break;
 			}
-			case Meme::JoeBiden: {
+			case JoeBiden: {
 				//ai is joe biden
-				m_ai = Meme::JoeBiden;
+				m_ai = JoeBiden;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
 				m_gameObject1->load("content/joeBiden64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
@@ -639,15 +939,27 @@ void Game::initializeState() {
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::right);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::punch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchPunch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::block);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchBlock);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::kick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchKick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
 				m_gameObject1->setPosition(560, 230);
 				break;
 			}
-			case Meme::Spongegar: {
+			case Spongegar: {
 				//ai is spongegar
-				m_ai = Meme::Spongegar;
+				m_ai = Spongegar;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
 				m_gameObject1->load("content/spongegar64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
@@ -658,6 +970,18 @@ void Game::initializeState() {
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::right);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::punch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchPunch);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::block);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchBlock);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::kick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
+				m_gameObject1->useAnimations(GameObject::Direction::crouchKick);
+				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
@@ -666,11 +990,59 @@ void Game::initializeState() {
 			}
 			};
 		}
-		
-
 		m_gameObjects = { m_gameObject0, m_gameObject1 };
 		//Change gamestate
-		m_gameState = GameState::Fighting;
+		m_gameState = Fighting;
+		m_transition = false;
+		break;
+	}
+	case Fighting: {
+		//reset background
+		//m_backgroundTexture.loadFromFile("content/theCourtyard.jpg");
+		//m_background.setTexture(m_backgroundTexture);
+		//game over text
+		if (m_highScore > m_highestScore) {
+			m_highestScore = m_highScore;
+		}
+		//set gameWonText
+		m_gameWonText.setFont(m_gameFont);
+		m_gameWonText.setString("GAME OVER\npress enter to play again\nhigh score: \nyour score: ");
+		m_gameWonText.setCharacterSize(55);
+		m_gameWonText.setFillColor(sf::Color(196, 169, 86));
+		m_gameWonText.setPosition(100, 10);
+		m_gameWonText.setOutlineColor(sf::Color::Black);
+		m_gameWonText.setOutlineThickness(2);
+		//set up highScore and highestScore text boxes
+		m_highestScoreText.setFont(m_gameFont);
+		m_highestScoreText.setString(std::to_string(m_highScore));
+		m_highestScoreText.setCharacterSize(55);
+		m_highestScoreText.setFillColor(sf::Color(196, 169, 86));
+		m_highestScoreText.setPosition(400, 170);
+		m_highestScoreText.setOutlineColor(sf::Color::Black);
+		m_highestScoreText.setOutlineThickness(2);
+		m_highScoreText.setPosition(400, 250);
+		//creat gameObjects
+		m_gameObjects = {};
+		m_gameState = GameWon;
+		m_transition = false;
+		break;
+	}
+	case GameWon: {
+		//load the background
+		m_backgroundTexture.loadFromFile("content/memeCombat.jpg");
+		m_background.setTexture(m_backgroundTexture, true);
+		//reset high score
+		m_highScore = 0;
+		//Initialize the press enter game object
+		m_gameObject0 = new AnimatedGameObject(0.66f, GameObject::PlayerType::other);
+		m_gameObject0->load("content/pressEntertoBegin.png");
+		m_gameObject0->useAnimations(GameObject::Direction::none);
+		m_gameObject0->addTextureRect(sf::Rect<int>(0, 30, 290, 30));
+		m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 290, 30));
+		m_gameObject0->setPosition(255, 340);
+
+		m_gameObjects = { m_gameObject0 };
+		m_gameState = Starting;
 		m_transition = false;
 		break;
 	}
@@ -680,23 +1052,31 @@ void Game::initializeState() {
 }
 
 void Game::render() {
-    m_window.clear();
+	m_window.clear();
 	m_window.draw(m_background);
 	for (GameObject* gameObject : m_gameObjects) {
 		gameObject->draw(m_window);
 	}
-	if (m_highlightCharacter) {
+	if (m_highlightCharacter || m_gameState == Lore) {
 		m_window.draw(*m_characterSelectShape);
 		m_window.draw(m_characterText);
 	}
-	if (m_gameState == GameState::GameWon)
+	if (m_gameState == Menu || m_gameState == Control) {
+		m_window.draw(m_characterText);
+	}
+	if (m_gameState == Fighting || m_gameState == GameWon)
+		m_window.draw(m_highScoreText);
+	if (m_gameState == GameWon) {
 		m_window.draw(m_gameWonText);
+		m_window.draw(m_highestScoreText);
+	}
+		
 	m_window.display();
 }
 
 Game::GameState Game::isGameWon(float x, float y) {
 	if (false)
-		return GameState::GameWon;
+		return GameWon;
 	else
 		return m_gameState;
 }

@@ -13,8 +13,9 @@
 class Game {
 public:
 	//enum to resolve game state
-	enum GameState {Starting, PlayerSelect, Fighting, NextStage, GameOver, GameWon};
+	enum GameState {Starting, Lore, Menu, Control, PlayerSelect, Fighting, GameWon, GameOver};
 	enum Meme {Harambe, Kangaroo, EvilKermit, Pepe, DatBoi, JoeBiden, Spongegar};
+	enum GameMode {SinglePlayer, TwoPlayer, Controls};
     //use default screen size
     Game();
     //run the game
@@ -42,12 +43,17 @@ private:
 	sf::RectangleShape* m_characterSelectShape;
 	sf::Text m_characterText;
 	sf::Text m_gameWonText;
+	sf::Text m_highScoreText;
+	sf::Text m_highestScoreText;
 	
     GameObject* m_gameObject0;
 	GameObject* m_gameObject1;
 	std::vector<GameObject*> m_gameObjects;
 	GameState m_gameState = GameState::Starting;
 	Meme m_player, m_remote, m_ai;
+	GameMode m_gameMode;
+	int m_highScore = 0;
+	int m_highestScore = 0;
 	bool m_transition = false;
 	bool m_highlightCharacter = false;
 };
