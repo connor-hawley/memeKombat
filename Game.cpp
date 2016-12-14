@@ -10,12 +10,12 @@ Game::Game() :
 	m_window.setFramerateLimit(40);
 
 	//load the background
-	m_backgroundTexture.loadFromFile("content/memeCombat.jpg");
+	m_backgroundTexture.loadFromFile("memeCombat.jpg");
 	m_background.setTexture(m_backgroundTexture, true);
 
 	//Initialize the press enter game object
 	m_gameObject0 = new AnimatedGameObject(0.66f, GameObject::PlayerType::other);
-	m_gameObject0->load("content/pressEntertoBegin.png");
+	m_gameObject0->load("pressEntertoBegin.png");
 	m_gameObject0->useAnimations(GameObject::Direction::none);
 	m_gameObject0->addTextureRect(sf::Rect<int>(0, 30, 290, 30));
 	m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 290, 30));
@@ -24,7 +24,7 @@ Game::Game() :
 	m_gameObjects = { m_gameObject0 };
 
 	//make game font
-	m_gameFont.loadFromFile("content/comicSans.ttf");
+	m_gameFont.loadFromFile("comicSans.ttf");
 	
 }
 
@@ -425,7 +425,7 @@ void Game::initializeState() {
 		m_characterSelectShape = new sf::RectangleShape(sf::Vector2<float>(800, 450));
 		m_characterSelectShape->setOutlineColor(sf::Color::Transparent);
 		m_characterSelectShape->setFillColor(sf::Color::Black);
-		//m_backgroundTexture.loadFromFile("content/blackScreen.png");
+		//m_backgroundTexture.loadFromFile("blackScreen.png");
 		//m_background.setTexture(m_backgroundTexture);
 		//spicy memes
 		m_gameObjects = {};
@@ -450,7 +450,7 @@ void Game::initializeState() {
 		m_characterSelectShape->setFillColor(sf::Color::Transparent);
 		m_characterSelectShape->setPosition(290, 90);
 		//load background
-		m_backgroundTexture.loadFromFile("content/blackScreen.png");
+		m_backgroundTexture.loadFromFile("blackScreen.png");
 		m_background.setTexture(m_backgroundTexture);
 		//spicy memes
 		m_gameObjects = {};
@@ -467,7 +467,7 @@ void Game::initializeState() {
 		switch (m_gameMode) {
 		case SinglePlayer: {
 			//Set new background
-			m_backgroundTexture.loadFromFile("content/chooseFighter.jpg");
+			m_backgroundTexture.loadFromFile("chooseFighter.jpg");
 			m_background.setTexture(m_backgroundTexture);
 			//Make new gameObjects
 			m_gameObjects = {};
@@ -488,12 +488,12 @@ void Game::initializeState() {
 			break;
 		}
 		case TwoPlayer: {
-			//NITISH START HERE
+			// 
 			break;
 		}
 		case Controls: {
 			//Set new background
-			m_backgroundTexture.loadFromFile("content/blackScreen.png");
+			m_backgroundTexture.loadFromFile("blackScreen.png");
 			m_background.setTexture(m_backgroundTexture);
 			//Make new gameObjects
 			m_gameObjects = {};
@@ -515,7 +515,7 @@ void Game::initializeState() {
 		//Stop displaying character select shape
 		m_highlightCharacter = false;
 		//Set new background
-		m_backgroundTexture.loadFromFile("content/theCourtyard.jpg");
+		m_backgroundTexture.loadFromFile("theCourtyard.jpg");
 		m_background.setTexture(m_backgroundTexture);
 		//Set up high score text
 		m_highScoreText.setFont(m_gameFont);
@@ -529,12 +529,12 @@ void Game::initializeState() {
 		case Harambe: {
 			//display harambe
 			/*m_gameObject0 = new RegularGameObject();
-			m_gameObject0->load("content/harambe64.png");
+			m_gameObject0->load("harambe64.png");
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
 			m_gameObject0->setPosition(120, 230);*/
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
-			m_gameObject0->load("content/harambe64.png");
+			m_gameObject0->load("harambe64.png");
 			m_gameObject0->useAnimations(GameObject::Direction::up);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::down);
@@ -564,7 +564,7 @@ void Game::initializeState() {
 		case Kangaroo: {
 			//display kangaroo
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
-			m_gameObject0->load("content/kangaroo64.png");
+			m_gameObject0->load("kangaroo64.png");
 			m_gameObject0->useAnimations(GameObject::Direction::up);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::down);
@@ -594,7 +594,7 @@ void Game::initializeState() {
 		case EvilKermit: {
 			//display evil kermit
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
-			m_gameObject0->load("content/evilKermit64.png");
+			m_gameObject0->load("evilKermit64.png");
 			m_gameObject0->useAnimations(GameObject::Direction::up);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::down);
@@ -624,7 +624,7 @@ void Game::initializeState() {
 		case Pepe: {
 			//display pepe
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
-			m_gameObject0->load("content/pepe64.png");
+			m_gameObject0->load("pepe64.png");
 			m_gameObject0->useAnimations(GameObject::Direction::up);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::down);
@@ -654,7 +654,7 @@ void Game::initializeState() {
 		case DatBoi: {
 			//display dat boi
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
-			m_gameObject0->load("content/datBoi64.png");
+			m_gameObject0->load("datBoi64.png");
 			m_gameObject0->useAnimations(GameObject::Direction::up);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::down);
@@ -684,7 +684,7 @@ void Game::initializeState() {
 		case JoeBiden: {
 			//display joe biden
 			m_gameObject0 = new AnimatedGameObject(0.20f, GameObject::PlayerType::local);
-			m_gameObject0->load("content/joeBidenSprites.png");
+			m_gameObject0->load("joeBidenSprites.png");
 			m_gameObject0->useAnimations(GameObject::Direction::down);
 			m_gameObject0->addTextureRect(sf::Rect<int>(1290, 25, 65, 105));
 			m_gameObject0->useAnimations(GameObject::Direction::left);
@@ -737,7 +737,7 @@ void Game::initializeState() {
 		case Spongegar: {
 			//display spongegar
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
-			m_gameObject0->load("content/spongegar64.png");
+			m_gameObject0->load("spongegar64.png");
 			m_gameObject0->useAnimations(GameObject::Direction::up);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->useAnimations(GameObject::Direction::down);
@@ -775,7 +775,7 @@ void Game::initializeState() {
 				//ai is harambe
 				m_ai = Harambe;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
-				m_gameObject1->load("content/harambe64.png");
+				m_gameObject1->load("harambe64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::down);
@@ -806,7 +806,7 @@ void Game::initializeState() {
 				//ai is kangaroo
 				m_ai = Kangaroo;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
-				m_gameObject1->load("content/kangaroo64.png");
+				m_gameObject1->load("kangaroo64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::down);
@@ -837,7 +837,7 @@ void Game::initializeState() {
 				//ai is evil kermit
 				m_ai = EvilKermit;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
-				m_gameObject1->load("content/evilKermit64.png");
+				m_gameObject1->load("evilKermit64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::down);
@@ -868,7 +868,7 @@ void Game::initializeState() {
 				//ai is pepe
 				m_ai = Pepe;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
-				m_gameObject1->load("content/pepe64.png");
+				m_gameObject1->load("pepe64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::down);
@@ -899,7 +899,7 @@ void Game::initializeState() {
 				//ai is dat boi
 				m_ai = DatBoi;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
-				m_gameObject1->load("content/datBoi64.png");
+				m_gameObject1->load("datBoi64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::down);
@@ -930,7 +930,7 @@ void Game::initializeState() {
 				//ai is joe biden
 				m_ai = JoeBiden;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
-				m_gameObject1->load("content/joeBiden64.png");
+				m_gameObject1->load("joeBiden64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::down);
@@ -961,7 +961,7 @@ void Game::initializeState() {
 				//ai is spongegar
 				m_ai = Spongegar;
 				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
-				m_gameObject1->load("content/spongegar64.png");
+				m_gameObject1->load("spongegar64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->useAnimations(GameObject::Direction::down);
@@ -998,7 +998,7 @@ void Game::initializeState() {
 	}
 	case Fighting: {
 		//reset background
-		//m_backgroundTexture.loadFromFile("content/theCourtyard.jpg");
+		//m_backgroundTexture.loadFromFile("theCourtyard.jpg");
 		//m_background.setTexture(m_backgroundTexture);
 		//game over text
 		if (m_highScore > m_highestScore) {
@@ -1029,13 +1029,13 @@ void Game::initializeState() {
 	}
 	case GameWon: {
 		//load the background
-		m_backgroundTexture.loadFromFile("content/memeCombat.jpg");
+		m_backgroundTexture.loadFromFile("memeCombat.jpg");
 		m_background.setTexture(m_backgroundTexture, true);
 		//reset high score
 		m_highScore = 0;
 		//Initialize the press enter game object
 		m_gameObject0 = new AnimatedGameObject(0.66f, GameObject::PlayerType::other);
-		m_gameObject0->load("content/pressEntertoBegin.png");
+		m_gameObject0->load("pressEntertoBegin.png");
 		m_gameObject0->useAnimations(GameObject::Direction::none);
 		m_gameObject0->addTextureRect(sf::Rect<int>(0, 30, 290, 30));
 		m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 290, 30));
