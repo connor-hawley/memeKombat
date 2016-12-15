@@ -8,9 +8,8 @@ The game allows two players to control different keys on the keyboard in order t
 For the extra credit portion of the product, we decided to make an amazing (nontrivial) game featuring different
     sprites, collision detection, and a varied scoring system.
 
-We also decided to implement inheritance to make the code a bit cleaner and more efficient. It should be noted that
-    the implementation of the inheritance is not perfect due to unforeseen memory leaks, but the underlying code does
-    indeed work.
+We also decided to implement inheritance to make the code a bit cleaner and more efficient. Each figher is an object
+    that extends AnimatedGameObject, with an associated constructor to load the correct image in the program.
 
 
 Connor worked on the core of the game including making the screens, implementing transitions, and creating the
