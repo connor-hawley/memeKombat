@@ -9,6 +9,13 @@
 #include "GameObject.h"
 #include "RegularGameObject.h"
 #include "AnimatedGameObject.h"
+#include "Harambe.h"
+#include "Kangaroo.h"
+#include "EvilKermit.h"
+#include "Pepe.h"
+#include "DatBoi.h"
+#include "JoeBiden.h"
+#include "Spongegar.h"
 
 class Game {
 public:
@@ -46,9 +53,9 @@ private:
 	sf::Text m_highScoreText;
 	sf::Text m_highestScoreText;
 	
-    GameObject* m_gameObject0;
-	GameObject* m_gameObject1;
-	std::vector<GameObject*> m_gameObjects;
+    AnimatedGameObject* m_gameObject0;
+	AnimatedGameObject* m_gameObject1;
+	std::vector<AnimatedGameObject*> m_gameObjects;
 	GameState m_gameState = GameState::Starting;
 	Meme m_player, m_remote;
 	GameMode m_gameMode;

@@ -10,6 +10,8 @@ class AnimatedGameObject : public GameObject {
 public:
     AnimatedGameObject(float spriteInterval, PlayerType playerType);
 
+	AnimatedGameObject();
+
 	~AnimatedGameObject();
 	
     bool load(const std::string &filename);

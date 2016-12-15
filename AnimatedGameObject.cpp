@@ -228,3 +228,5 @@ float AnimatedGameObject::getSpeed() { return m_speed; }
 GameObject::Direction AnimatedGameObject::getLastDirection() { return m_lastDirection; }
 
 GameObject::PlayerType AnimatedGameObject::getPlayerType() { return m_playerType; }
+
+AnimatedGameObject::AnimatedGameObject() {}

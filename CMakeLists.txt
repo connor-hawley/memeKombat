@@ -11,7 +11,7 @@ include_directories(${SFML_INCLUDE_DIR})
 
 set(SOURCE_FILES
         main.cpp
-        Game.cpp Game.h GameObject.h RegularGameObject.h RegularGameObject.cpp AnimatedGameObject.cpp AnimatedGameObject.h GameObject.cpp)
+        Game.cpp Game.h GameObject.h RegularGameObject.h RegularGameObject.cpp AnimatedGameObject.cpp AnimatedGameObject.h GameObject.cpp Harambe.h Harambe.cpp Kangaroo.h Kangaroo.cpp EvilKermit.h EvilKermit.cpp Pepe.h Pepe.cpp DatBoi.h JoeBiden.h Spongegar.h DatBoi.cpp JoeBiden.cpp Spongegar.cpp)
 
 #copy file to where my executable is
 file(COPY "content/memeCombat.jpg" DESTINATION "${CMAKE_BINARY_DIR}")
