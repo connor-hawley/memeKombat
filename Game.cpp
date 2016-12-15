@@ -3,6 +3,10 @@
 //
 
 #include "Game.h"
+#include <iostream>
+#include <string>
+
+using namespace std;
 
 Game::Game() :
 	m_window(sf::VideoMode(800, 450), "Meme Kombat")
@@ -96,14 +100,10 @@ void Game::handlePlayerInput(sf::Event event) {
 			if (mouseEvent.button == sf::Mouse::Button::Left) {
 				sf::Vector2<float> shapeLoc = m_characterSelectShape->getPosition();
 				if (shapeLoc.x == 290 && shapeLoc.y == 90) {
-					m_gameMode = SinglePlayer;
+					m_gameMode = Play;
 					m_transition = true;
 				}
 				else if (shapeLoc.x == 290 && shapeLoc.y == 190) {
-					m_gameMode = TwoPlayer;
-					m_transition = true;
-				}
-				else if (shapeLoc.x == 290 && shapeLoc.y == 280) {
 					m_gameMode = Controls;
 					m_transition = true;
 				}
@@ -157,15 +157,16 @@ void Game::handlePlayerInput(sf::Event event) {
 		break;
 	}
 	case Fighting : {
+        //GameObject0
 		if (!m_gameObject0->m_animationTriggered) {
 			if (event.type == sf::Event::EventType::KeyPressed) {
 				//handle extra buttons. modern emulator controls are 
 				//down - crouch
 				//left - left
 				//right - right
-				//z - punch
-				//x - block
-				//c - kick
+				//i - punch
+				//o - block
+				//p - kick
 				//different attacks when crouching
 				float x0 = m_gameObject0->getPosition().x;
 				float x1 = m_gameObject1->getPosition().x;
@@ -182,7 +183,7 @@ void Game::handlePlayerInput(sf::Event event) {
 					m_gameObject0->useAnimations(GameObject::Direction::right);
 				}
 
-				if (event.key.code == sf::Keyboard::Z) {
+				if (event.key.code == sf::Keyboard::I) {
 					//local punch mechanics
 					if (!m_gameObject0->m_down && m_gameObject0->m_canPunch) {
 						m_gameObject0->useAnimations(GameObject::Direction::punch);
@@ -215,7 +216,7 @@ void Game::handlePlayerInput(sf::Event event) {
 						}
 					}
 				}
-				else if (event.key.code == sf::Keyboard::X) {
+				else if (event.key.code == sf::Keyboard::O) {
 					//local block mechanics
 					if (!m_gameObject0->m_down) {
 						m_gameObject0->useAnimations(GameObject::Direction::block);
@@ -226,7 +227,7 @@ void Game::handlePlayerInput(sf::Event event) {
 						m_gameObject0->m_block = true;
 					}
 				}
-				else if (event.key.code == sf::Keyboard::C) {
+				else if (event.key.code == sf::Keyboard::P) {
 					//local kick mechanics
 					if (!m_gameObject0->m_down && m_gameObject0->m_canKick) {
 						m_gameObject0->useAnimations(GameObject::Direction::kick);
@@ -270,18 +271,19 @@ void Game::handlePlayerInput(sf::Event event) {
 					m_gameObject0->useAnimations(GameObject::Direction::none);
 				}
 				else if (event.key.code == sf::Keyboard::Right) {
+                    cout << "Right Ended" << endl;
 					m_gameObject0->m_right = false;
 					m_gameObject0->useAnimations(GameObject::Direction::none);
 				}
-				if (event.key.code == sf::Keyboard::Z) {
+				if (event.key.code == sf::Keyboard::I) {
 					m_gameObject0->m_canPunch = true;
 					m_gameObject0->useAnimations(GameObject::Direction::none);
 				}
-				else if (event.key.code = sf::Keyboard::X) {
+				else if (event.key.code = sf::Keyboard::O) {
 					m_gameObject0->m_block = false;
 					m_gameObject0->useAnimations(GameObject::Direction::none);
 				}
-				else if (event.key.code = sf::Keyboard::C) {
+				else if (event.key.code = sf::Keyboard::P) {
 					m_gameObject0->m_canKick = true;
 					m_gameObject0->useAnimations(GameObject::Direction::none);
 				}
@@ -296,6 +298,148 @@ void Game::handlePlayerInput(sf::Event event) {
 				m_gameObject0->useAnimations(GameObject::Direction::none);
 			}
 		}
+
+        //GameObject1
+        if (!m_gameObject1->m_animationTriggered) {
+            if (event.type == sf::Event::EventType::KeyPressed) {
+                //handle extra buttons. modern emulator controls are
+                //down - crouch
+                //left - left
+                //right - right
+                //i - punch
+                //o - block
+                //p - kick
+                //different attacks when crouching
+                float x0 = m_gameObject1->getPosition().x;
+                float x1 = m_gameObject0->getPosition().x;
+                if (event.key.code == sf::Keyboard::S) {
+                    m_gameObject1->m_down = true;
+                    m_gameObject1->useAnimations(GameObject::Direction::down);
+                }
+                else if (event.key.code == sf::Keyboard::A) {
+                    m_gameObject1->m_left = true;
+                    m_gameObject1->useAnimations(GameObject::Direction::left);
+                }
+                else if (event.key.code == sf::Keyboard::D) {
+                    m_gameObject1->m_right = true;
+                    m_gameObject1->useAnimations(GameObject::Direction::right);
+                }
+
+                if (event.key.code == sf::Keyboard::C) {
+                    //local punch mechanics
+                    if (!m_gameObject1->m_down && m_gameObject1->m_canPunch) {
+                        m_gameObject1->useAnimations(GameObject::Direction::punch);
+                        m_gameObject1->m_canPunch = false;
+                        m_gameObject1->m_animationTriggered = true;
+                        if (((x1 > x0 && x1 - x0 < 95) || (x0 > x1 && x0 - x1 < 95))
+                            && !(m_gameObject0->m_down || m_gameObject0->m_block)) {
+                            m_highScore += 1;
+                            if (m_gameObject0->m_health - 3 > 0)
+                                m_gameObject0->m_health -= 3;
+                            else {
+                                m_gameObject0->m_health = 0;
+                                m_transition = true;
+                            }
+                        }
+                    }
+                    else if (m_gameObject1->m_down && m_gameObject1->m_canPunch) {
+                        m_gameObject1->useAnimations(GameObject::Direction::crouchPunch);
+                        m_gameObject1->m_canPunch = false;
+                        m_gameObject1->m_animationTriggered = true;
+                        if (((x1 > x0 && x1 - x0 < 95) || (x0 > x1 && x0 - x1 < 95))
+                            && !(m_gameObject0->m_down || m_gameObject0->m_block)) {
+                            m_highScore += 30;
+                            if (m_gameObject0->m_health - 10 > 0)
+                                m_gameObject0->m_health -= 10;
+                            else {
+                                m_gameObject0->m_health = 0;
+                                m_transition = true;
+                            }
+                        }
+                    }
+                }
+                else if (event.key.code == sf::Keyboard::V) {
+                    //local block mechanics
+                    if (!m_gameObject1->m_down) {
+                        m_gameObject1->useAnimations(GameObject::Direction::block);
+                        m_gameObject1->m_block = true;
+                    }
+                    else if (m_gameObject1->m_down) {
+                        m_gameObject1->useAnimations(GameObject::Direction::crouchBlock);
+                        m_gameObject1->m_block = true;
+                    }
+                }
+                else if (event.key.code == sf::Keyboard::B) {
+                    //local kick mechanics
+                    if (!m_gameObject1->m_down && m_gameObject1->m_canKick) {
+                        m_gameObject1->useAnimations(GameObject::Direction::kick);
+                        m_gameObject1->m_canKick = false;
+                        m_gameObject1->m_animationTriggered = true;
+                        if (((x1 > x0 && x1 - x0 < 95) || (x0 > x1 && x0 - x1 < 95))
+                            && !(m_gameObject0->m_down || m_gameObject0->m_block)) {
+                            m_highScore += 7;
+                            if (m_gameObject0->m_health - 7 > 0)
+                                m_gameObject0->m_health -= 7;
+                            else {
+                                m_gameObject0->m_health = 0;
+                                m_transition = true;
+                            }
+                        }
+                    }
+                    else if (m_gameObject1->m_down && m_gameObject1->m_canKick) {
+                        m_gameObject1->useAnimations(GameObject::Direction::crouchKick);
+                        m_gameObject1->m_canKick = false;
+                        m_gameObject1->m_animationTriggered = true;
+                        if (((x1 > x0 && x1 - x0 < 95) || (x0 > x1 && x0 - x1 < 95))
+                            && !m_gameObject0->m_block) {
+                            m_highScore += 2;
+                            if (m_gameObject0->m_health - 5 > 0)
+                                m_gameObject0->m_health -= 5;
+                            else {
+                                m_gameObject0->m_health = 0;
+                                m_transition = true;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (event.type == sf::Event::EventType::KeyReleased) {
+                if (event.key.code == sf::Keyboard::S) {
+                    m_gameObject1->m_down = false;
+                    m_gameObject1->useAnimations(GameObject::Direction::none);
+                }
+                else if (event.key.code == sf::Keyboard::A) {
+                    m_gameObject1->m_left = false;
+                    m_gameObject1->useAnimations(GameObject::Direction::none);
+                }
+                else if (event.key.code == sf::Keyboard::D) {
+                    cout << "Key D released" << endl;
+                    m_gameObject1->m_right = false;
+                    m_gameObject1->useAnimations(GameObject::Direction::none);
+                }
+                if (event.key.code == sf::Keyboard::C) {
+                    m_gameObject1->m_canPunch = true;
+                    m_gameObject1->useAnimations(GameObject::Direction::none);
+                }
+                else if (event.key.code = sf::Keyboard::V) {
+                    m_gameObject1->m_block = false;
+                    m_gameObject1->useAnimations(GameObject::Direction::none);
+                }
+                else if (event.key.code = sf::Keyboard::B) {
+                    m_gameObject1->m_canKick = true;
+                    m_gameObject1->useAnimations(GameObject::Direction::none);
+                }
+            }
+            else {
+                m_gameObject1->m_down = false;
+                m_gameObject1->m_left = false;
+                m_gameObject1->m_right = false;
+                m_gameObject1->m_canPunch = true;
+                m_gameObject1->m_canKick = true;
+                m_gameObject1->m_animationTriggered = false;
+                m_gameObject1->useAnimations(GameObject::Direction::none);
+            }
+        }
 		break;
 	}
 	case GameWon: {
@@ -326,10 +470,6 @@ void Game::update(sf::Time deltaT) {
 		}
 		else if (mouseLoc.x > 290 && mouseLoc.x < 520 && mouseLoc.y > 190 && mouseLoc.y < 257) {
 			m_characterSelectShape->setPosition(290, 190);
-			m_highlightCharacter = true;
-		}
-		else if (mouseLoc.x > 290 && mouseLoc.x < 520 && mouseLoc.y > 280 && mouseLoc.y < 347) {
-			m_characterSelectShape->setPosition(290, 280);
 			m_highlightCharacter = true;
 		}
 		else {
@@ -382,6 +522,7 @@ void Game::update(sf::Time deltaT) {
 		break;
 	}
 	case Fighting: {
+        //GameObject0
 		sf::Vector2<float> movement(0.0f, 0.0f);
 		if (m_gameObject0->m_left)
 			movement.x -= m_gameObject0->getSpeed();
@@ -408,6 +549,33 @@ void Game::update(sf::Time deltaT) {
 			}
 			};
 		}
+
+        //GameObject1
+        sf::Vector2<float> movement2(0.0f, 0.0f);
+        if (m_gameObject1->m_left)
+            movement2.x -= m_gameObject1->getSpeed();
+        if (m_gameObject1->m_right)
+            movement2.x += m_gameObject1->getSpeed();
+        if (x0 > 0 && x0 < 650 && ((x0 < x1 && x1 - x0 > 55) || (x0 > x1 && x0 - x1 > 55))) {
+            m_gameObject1->m_isStuck = false;
+            m_gameObject1->move(movement2 * deltaT.asSeconds());
+        }
+        else {
+            m_gameObject1->m_isStuck = true;
+            switch (m_gameObject1->getLastDirection()) {
+                case GameObject::Direction::left: {
+                    if (!m_gameObject1->GameObject::m_left)
+                        m_gameObject1->move(movement2 * deltaT.asSeconds());
+                    break;
+                }
+                case GameObject::Direction::right: {
+                    if (!m_gameObject1->GameObject::m_right)
+                        m_gameObject1->move(movement2 * deltaT.asSeconds());
+                    break;
+                }
+            };
+        }
+
 		//update high score
 		m_highScoreText.setString(std::to_string(m_highScore));
 	}
@@ -458,14 +626,14 @@ void Game::initializeState() {
 		m_characterText.setCharacterSize(35);
 		m_characterText.setFillColor(sf::Color(196, 169, 86));
 		m_characterText.setPosition(300, 100);
-		m_characterText.setString("Single Player\n\nTwo Player\n\nControls");
+		m_characterText.setString("Play\n\nControls");
 		m_gameState = Menu;
 		m_transition = false;
 		break;
 	}
 	case Menu: {
 		switch (m_gameMode) {
-		case SinglePlayer: {
+		case Play: {
 			//Set new background
 			m_backgroundTexture.loadFromFile("chooseFighter.jpg");
 			m_background.setTexture(m_backgroundTexture);
@@ -487,10 +655,6 @@ void Game::initializeState() {
 			m_gameState = PlayerSelect;
 			break;
 		}
-		case TwoPlayer: {
-			// 
-			break;
-		}
 		case Controls: {
 			//Set new background
 			m_backgroundTexture.loadFromFile("blackScreen.png");
@@ -500,10 +664,10 @@ void Game::initializeState() {
 			//Make new character select rectangle
 			m_highlightCharacter = false;
 			//Write out controls
-			m_characterText.setCharacterSize(35);
+			m_characterText.setCharacterSize(25);
 			m_characterText.setFillColor(sf::Color(196, 169, 86));
 			m_characterText.setPosition(150, 30);
-			m_characterText.setString("-Left/Right - move\n-Down - crouch\n-Z - punch\n-X - block\n-C - kick\n\nPress enter to go back");
+			m_characterText.setString("                    PLAYER 1                    PLAYER 2 \n\n-Move          Left/Right                  A/D\n-Crouch        Down                           S\n-Punch          I                                  C\n-Block          O                                 V\n-Kick            P                                  B\n\nPress enter to go back");
 			m_gameState = Control;
 			break;
 		}
@@ -558,7 +722,7 @@ void Game::initializeState() {
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
-			m_gameObject0->setPosition(120, 230);
+			m_gameObject0->setPosition(560, 230);
 			break;
 		}
 		case Kangaroo: {
@@ -588,7 +752,7 @@ void Game::initializeState() {
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
-			m_gameObject0->setPosition(120, 230);
+			m_gameObject0->setPosition(560, 230);
 			break;
 		}
 		case EvilKermit: {
@@ -618,7 +782,7 @@ void Game::initializeState() {
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
-			m_gameObject0->setPosition(120, 230);
+			m_gameObject0->setPosition(560, 230);
 			break;
 		}
 		case Pepe: {
@@ -648,7 +812,7 @@ void Game::initializeState() {
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
-			m_gameObject0->setPosition(120, 230);
+			m_gameObject0->setPosition(560, 230);
 			break;
 		}
 		case DatBoi: {
@@ -678,7 +842,7 @@ void Game::initializeState() {
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
-			m_gameObject0->setPosition(120, 230);
+			m_gameObject0->setPosition(560, 230);
 			break;
 		}
 		case JoeBiden: {
@@ -731,7 +895,7 @@ void Game::initializeState() {
 			m_gameObject0->addTextureRect(sf::Rect<int>(320, 20, 65, 105));
 			m_gameObject0->addTextureRect(sf::Rect<int>(450, 20, 65, 105));
 			m_gameObject0->setScale(1.5f);
-			m_gameObject0->setPosition(120, 206);
+			m_gameObject0->setPosition(560, 206);
 			break;
 		}
 		case Spongegar: {
@@ -761,20 +925,20 @@ void Game::initializeState() {
 			m_gameObject0->useAnimations(GameObject::Direction::none);
 			m_gameObject0->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 			m_gameObject0->setScale(0.8f);
-			m_gameObject0->setPosition(120, 230);
+			m_gameObject0->setPosition(560, 230);
 			break;
 		}
 		};
-		//create other remote or ai player
-		m_ai = m_player;
-		while (m_ai == m_player) {
+		//create other remote or remote player
+		m_remote = m_player;
+		while (m_remote == m_player) {
 			srand(time(NULL));
 			int random = rand() % 6; //random number 0 to 6
 			switch (random) {
 			case Harambe: {
-				//ai is harambe
-				m_ai = Harambe;
-				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
+				//remote is harambe
+                m_remote = Harambe;
+				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::remote);
 				m_gameObject1->load("harambe64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
@@ -799,13 +963,13 @@ void Game::initializeState() {
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
-				m_gameObject1->setPosition(560, 230);
+				m_gameObject1->setPosition(120, 230);
 				break;
 			}
 			case Kangaroo: {
-				//ai is kangaroo
-				m_ai = Kangaroo;
-				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
+				//remote is kangaroo
+                m_remote = Kangaroo;
+				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::remote);
 				m_gameObject1->load("kangaroo64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
@@ -830,13 +994,13 @@ void Game::initializeState() {
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
-				m_gameObject1->setPosition(560, 230);
+				m_gameObject1->setPosition(120, 230);
 				break;
 			}
 			case EvilKermit: {
-				//ai is evil kermit
-				m_ai = EvilKermit;
-				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
+				//remote is evil kermit
+                m_remote = EvilKermit;
+				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::remote);
 				m_gameObject1->load("evilKermit64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
@@ -861,13 +1025,13 @@ void Game::initializeState() {
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
-				m_gameObject1->setPosition(560, 230);
+				m_gameObject1->setPosition(120, 230);
 				break;
 			}
 			case Pepe: {
-				//ai is pepe
-				m_ai = Pepe;
-				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
+				//remote is pepe
+                m_remote = Pepe;
+				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::remote);
 				m_gameObject1->load("pepe64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
@@ -892,13 +1056,13 @@ void Game::initializeState() {
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
-				m_gameObject1->setPosition(560, 230);
+				m_gameObject1->setPosition(120, 230);
 				break;
 			}
 			case DatBoi: {
-				//ai is dat boi
-				m_ai = DatBoi;
-				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
+				//remote is dat boi
+                m_remote = DatBoi;
+				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::remote);
 				m_gameObject1->load("datBoi64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
@@ -923,13 +1087,13 @@ void Game::initializeState() {
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
-				m_gameObject1->setPosition(560, 230);
+				m_gameObject1->setPosition(120, 230);
 				break;
 			}
 			case JoeBiden: {
-				//ai is joe biden
-				m_ai = JoeBiden;
-				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
+				//remote is joe biden
+				m_remote = JoeBiden;
+				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::remote);
 				m_gameObject1->load("joeBiden64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
@@ -954,13 +1118,13 @@ void Game::initializeState() {
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
-				m_gameObject1->setPosition(560, 230);
+				m_gameObject1->setPosition(120, 230);
 				break;
 			}
 			case Spongegar: {
-				//ai is spongegar
-				m_ai = Spongegar;
-				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::ai);
+				//remote is spongegar
+                m_remote = Spongegar;
+				m_gameObject1 = new AnimatedGameObject(1.0f, GameObject::PlayerType::remote);
 				m_gameObject1->load("spongegar64.png");
 				m_gameObject1->useAnimations(GameObject::Direction::up);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
@@ -985,7 +1149,7 @@ void Game::initializeState() {
 				m_gameObject1->useAnimations(GameObject::Direction::none);
 				m_gameObject1->addTextureRect(sf::Rect<int>(0, 0, 120, 134));
 				m_gameObject1->setScale(0.8f);
-				m_gameObject1->setPosition(560, 230);
+				m_gameObject1->setPosition(120, 230);
 				break;
 			}
 			};

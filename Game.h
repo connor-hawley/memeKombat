@@ -15,7 +15,7 @@ public:
 	//enum to resolve game state
 	enum GameState {Starting, Lore, Menu, Control, PlayerSelect, Fighting, GameWon, GameOver};
 	enum Meme {Harambe, Kangaroo, EvilKermit, Pepe, DatBoi, JoeBiden, Spongegar};
-	enum GameMode {SinglePlayer, TwoPlayer, Controls};
+	enum GameMode {Play, Controls};
     //use default screen size
     Game();
     //run the game
@@ -50,7 +50,7 @@ private:
 	GameObject* m_gameObject1;
 	std::vector<GameObject*> m_gameObjects;
 	GameState m_gameState = GameState::Starting;
-	Meme m_player, m_remote, m_ai;
+	Meme m_player, m_remote;
 	GameMode m_gameMode;
 	int m_highScore = 0;
 	int m_highestScore = 0;
