@@ -399,7 +399,6 @@ void Game::handlePlayerInput(sf::Event event) {
 					m_gameObject0->useAnimations(GameObject::Direction::none);
 				}
 				else if (event.key.code == sf::Keyboard::Right) {
-					std::cout << "Right Ended" << std::endl;
 					m_gameObject0->m_right = false;
 					m_gameObject0->useAnimations(GameObject::Direction::none);
 				}
@@ -695,7 +694,11 @@ void Game::initializeState() {
 		switch (m_player) {
 		case Harambe: {
 			//display harambe
+
+			//Inheritance
 			//m_gameObject0 = (AnimatedGameObject *) (new class Harambe(1.0f, GameObject::PlayerType::local));
+
+			//Executable will sometimes crash without the following code implemented here
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
 			m_gameObject0->load("harambe64.png");
 			m_gameObject0->useAnimations(GameObject::Direction::up);
@@ -727,7 +730,11 @@ void Game::initializeState() {
 		}
 		case Kangaroo: {
 			//display kangaroo
+
+			//Inheritance
 			//m_gameObject0 = (AnimatedGameObject *) (new class Kangaroo(1.0f, GameObject::PlayerType::local));
+
+			//Executable will sometimes crash without the following code implemented here
 			m_gameObject0 = new AnimatedGameObject(1.0f, GameObject::PlayerType::local);
 			m_gameObject0->load("kangaroo64.png");
 			m_gameObject0->useAnimations(GameObject::Direction::up);
